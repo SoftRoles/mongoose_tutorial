@@ -1,6 +1,8 @@
 // Copyright (c) 2015 Cesanta Software Limited
 // All rights reserved
 
+#include <stdlib.h>
+
 #include "mongoose.h"
 
 static const char *s_http_port = "8000";
@@ -21,22 +23,32 @@ static void json_rest_api_handler(struct mg_connection *nc, int ev, void *ev_dat
     printf("-- HTTP Request received. Query String: %.*s\n", hm->query_string.len, hm->query_string.p);
     char *query_str = malloc(hm->query_string.len + 1);
     // printf("%d\n",strlen(keyval));
-    strncpy(query_str, hm->query_string.p, hm->query_string.len);
+    strncpy_s(query_str, hm->query_string.len + 1, hm->query_string.p, hm->query_string.len);
     query_str[hm->query_string.len] = '\0';
     printf("%s\n", query_str);
 
-    char *keyval = strtok(query_str, "&");
-    int i = 0;
+    char *keyval = strtok_s(query_str, hm->query_string.len + 1, "&");
     while (keyval != NULL)
     {
-      printf("%s\n", keyval); //printing each token
-      char *key = strtok(keyval, "=");
-      printf("%s\n", key); //printing each token
-      key = strtok(NULL, "=");
-      printf("%s\n", key); //printing each token
-      // i++;
-      // char *keyval = strtok(query_str, "&");
-      // for(int k=0; k<i; k++) keyval = strtok(NULL, "&");
+      printf("%s: %d\n", keyval, strlen(keyval)); //printing each token
+
+      //   // // set_constraint_handler_s(abort_handler_s);
+      //   // keyval = malloc(strlen(query_str_temp) + 1);
+      //   // strncpy(keyval, query_str_temp, strlen(query_str_temp));
+      //   // keyval[strlen(query_str_temp)] = '\0';
+      //   // printf("%s\n", keyval);
+      //   // char *keyval_tmp = strtok(keyval, "=");
+      //   // printf("%s\n", keyval_tmp); //printing each token
+      //   // keyval_tmp = strtok(NULL, "=");
+      //   // printf("%s\n", keyval_tmp); //printing each token
+      //   // free(keyval);
+
+      keyval = strtok(NULL, "&");
+      //   // printf("%s\n", query_str);
+      //   // printf("%s\n", key); //printing each token
+      //   // key = strtok(NULL, "=");
+      //   // printf("%s\n", query_str);
+      //   // printf("%s\n", key); //printing each token
     }
     free(query_str);
     printf("-- HTTP Request received. Body: %.*s\n", hm->body.len, hm->body.p);
