@@ -1,6 +1,8 @@
 // Copyright (c) 2015 Cesanta Software Limited
 // All rights reserved
-
+#if defined(_WIN32)
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 #include <stdlib.h>
 
 #include "mongoose.h"
@@ -33,11 +35,23 @@ static void json_rest_api_handler(struct mg_connection *nc, int ev, void *ev_dat
     while (keyval != NULL)
     {
       printf("%s: %d\n", keyval, strlen(keyval)); //printing each token
+
       char *keyval_copy = malloc(strlen(keyval) + 1);
       strncpy(keyval_copy, keyval, strlen(keyval));
       keyval_copy[strlen(keyval)] = '\0';
-      // char *keyval_copy = strdup(keyval);
-      printf("%s\n",keyval_copy);
+      printf("%s\n", keyval_copy);
+      char *e = strchr(keyval_copy, '=');
+      int index = (int)(e - keyval_copy);
+      keyval_copy[index] = '\0';
+      printf("%d\n", index);
+      char *key = malloc(sizeof(char *) * (strlen(keyval_copy) + 1));
+      strcpy(key, keyval_copy);
+      printf("%s: %d\n", key, strlen(key));
+      char *val = malloc(sizeof(char *) * (strlen(e + 1) + 1));
+      strcpy(val, e + 1);
+      printf("%s: %d\n", val, strlen(val));
+      free(key);
+      free(val);
       free(keyval_copy);
       keyval = strtok(NULL, "&");
     }
